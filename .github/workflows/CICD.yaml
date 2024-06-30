@@ -35,9 +35,9 @@ jobs:
             - name: AWS CLI v2
               uses: imehedi/actions-awscli-v2@latest
               with:
-                args: " lambda update-function-code \
+                args: "lambda update-function-code \
                     --function-name ${{ secrets.AWS_ARN_LAMBDA_DEV }} \
-                    --zip-file fileb:///src/code.zip"
+                    --zip-file=fileb:///src/code.zip"
               env:
                 AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
                 AWS_ACCESS_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
