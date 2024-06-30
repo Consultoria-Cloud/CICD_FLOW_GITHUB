@@ -2,9 +2,9 @@ name: Deploy Lambda Function
 
 on:
     push:
-        branches: [dev]
-        paths:
-            - "src/**"
+        branches: [dev, main]
+        #paths:
+        #    - "src/**"
     
     pull_request:
         branches: [dev, main]
@@ -32,7 +32,7 @@ jobs:
               uses: montudor/action-zip@v1
 
             - name: Create Zip file for Lambda Function
-              run: cd src && zip -r code.zip .
+              run: zip -r code.zip .
 
             - name: Deploy to AWS Lambda
               run: | 
