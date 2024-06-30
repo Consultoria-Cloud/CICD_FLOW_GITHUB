@@ -1,78 +1,16 @@
-name: Deploy Lambda Function
+name: Deploy Lambda Function Prod
 
 on:
-    #paths:
-    #  - "src/**"
+    push:
+      paths:
+        - "src/**"
+    pull_request:
+      branches: [main]
 
-  workflow_dispatch:
-    inputs:
-      tag_lambda:
-        description: 'How to Tag Lambda?'
-        required: true
-    
 jobs:
-  
-  dev:
-    runs-on: ubuntu-latest
-    environment: dev
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-
-      - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v1
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
-          aws-region: us-east-1
-
-      - name: Install zip tool
-        uses: montudor/action-zip@v1
-
-      - name: Create Zip file for Lambda Function
-        run: cd src && zip -r code.zip .
-
-      - name: Deploy to AWS Lambda
-        run: | 
-          aws lambda update-function-code \
-          --function-name ${{ secrets.AWS_ARN_LAMBDA }} \
-          --zip-file=fileb://src/code.zip
-
-      - name: Wait for 30 seconds
-        run: sleep 30
-
-      - name: Publish Lambda Version
-        run: | 
-          aws lambda publish-version \
-          --function-name ${{ secrets.AWS_ARN_LAMBDA }}
-
-  staging:
-    runs-on: ubuntu-latest
-    environment: staging
-    needs: dev
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-
-      - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v1
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
-          aws-region: us-east-1
-          
-      - name: Update alias lambda
-        run: | 
-          aws lambda update-alias \
-          --function-name ${{ secrets.AWS_ARN_LAMBDA }} --name staging --function-version ${{ github.event.inputs.tag_lambda }}
-
-  
   prod:
     runs-on: ubuntu-latest
     environment: prod
-    needs: staging
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -109,11 +47,5 @@ jobs:
       - name: Deploy to AWS Lambda
         run: | 
           aws lambda update-function-code \
-          --function-name ${{ secrets.AWS_ARN_LAMBDA }} \
+          --function-name ${{ secrets.AWS_ARN_LAMBDA_PROD }} \
           --zip-file=fileb://src/code.zip
-      
-      - name: Update alias lambda
-        run: | 
-          aws lambda update-alias \
-          --function-name ${{ secrets.AWS_ARN_LAMBDA }} --name prod --function-version ${{ github.event.inputs.tag_lambda }}
-
