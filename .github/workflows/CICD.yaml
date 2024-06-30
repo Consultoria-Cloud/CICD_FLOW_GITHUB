@@ -2,7 +2,7 @@ name: Deploy Lambda Function
 
 on:
     push:
-        branches: [dev]
+        branches: [dev, main]
         paths:
             - "src/**"
             - "test/**"
@@ -32,14 +32,23 @@ jobs:
             - name: Install zip tool
               uses: montudor/action-zip@v1
 
-            - name: Create Zip file for Lambda Function
-              run: zip -r code.zip .
+            - name: Create Zip file for Lambda Function 
+              run: cd src && zip -r code.zip .
 
             - name: Deploy to AWS Lambda
               run: | 
                 aws lambda update-function-code \
                 --function-name ${{ secrets.AWS_ARN_LAMBDA_DEV }} \
                 --zip-file=fileb://src/code.zip
+                
+            - name: Create Zip file for Lambda Function Test
+              run: cd test && zip -r test.zip .
+  
+            - name: Deploy to AWS Lambda
+              run: | 
+                  aws lambda update-function-code \
+                  --function-name ${{ secrets.AWS_ARN_LAMBDA_DEV }} \
+                  --zip-file=fileb://test/test.zip
 
             - name: Wait for 30 seconds
               run: sleep 30
@@ -85,6 +94,15 @@ jobs:
 
             - name: Create Zip file for Lambda Function
               run: cd src && zip -r code.zip .
+            
+            - name: Create Zip file for Lambda Function Test
+              run: cd test && zip -r test.zip .
+  
+            - name: Deploy to AWS Lambda
+              run: | 
+                  aws lambda update-function-code \
+                  --function-name ${{ secrets.AWS_ARN_LAMBDA_DEV }} \
+                  --zip-file=fileb://test/test.zip
 
             - name: Deploy to AWS Lambda
               run: | 
