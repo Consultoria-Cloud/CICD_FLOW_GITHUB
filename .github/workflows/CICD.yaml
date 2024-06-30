@@ -2,9 +2,10 @@ name: Deploy Lambda Function
 
 on:
     push:
-        branches: [dev, main]
-        #paths:
-        #    - "src/**"
+        branches: [dev]
+        paths:
+            - "src/**"
+            - "test/**"
     
     pull_request:
         branches: [dev, main]
@@ -38,7 +39,7 @@ jobs:
               run: | 
                 aws lambda update-function-code \
                 --function-name ${{ secrets.AWS_ARN_LAMBDA_DEV }} \
-                --zip-file fileb://src/code.zip
+                --zip-file=fileb://src/code.zip
 
             - name: Wait for 30 seconds
               run: sleep 30
