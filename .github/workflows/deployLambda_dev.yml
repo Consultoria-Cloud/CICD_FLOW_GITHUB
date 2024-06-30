@@ -82,7 +82,7 @@ jobs:
   prod:
     runs-on: ubuntu-latest
     environment: prod
-    needs: staging
+    needs: dev
     steps:
       - name: Checkout
         uses: actions/checkout@v2
