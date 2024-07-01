@@ -2,11 +2,35 @@ name: Deploy Lambda Function
 
 on:
     push:
+        branches: [dev]
+    pull_request:
         branches: [main]
 
     workflow_dispatch:
     
 jobs:
+
+    test:
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v2
+
+            - name: Set up Python
+              uses: actions/setup-python@v2
+              with:
+                python-version: '3.8'
+            
+            - name: Install dependencies
+              run: |
+                python3 -m pip install toml
+                python3 -m pip install --upgrade pip /
+                pip install -r requirements.txt
+
+            - name: Run tests
+              run: |
+                python3 -m pytest test/ # Run tests located in the /test directory
   
     dev:
         runs-on: ubuntu-latest
