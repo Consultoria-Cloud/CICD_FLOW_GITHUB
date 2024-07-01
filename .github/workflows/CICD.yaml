@@ -5,15 +5,15 @@ on:
     
 jobs:
 
-    test:
+    Test:
         runs-on: ubuntu-latest
 
         steps:
             - name: Checkout repository
-              uses: actions/checkout@v2
+              uses: actions/checkout@v4
 
             - name: Set up Python
-              uses: actions/setup-python@v2
+              uses: actions/setup-python@v5
               with:
                 python-version: '3.8'
             
@@ -27,13 +27,13 @@ jobs:
               run: |
                 python3 -m pytest test/ # Run tests located in the /test directory
   
-    dev:
+    Dev:
         runs-on: ubuntu-latest
         environment: dev
-        needs: test
+        needs: Test
         steps:
             - name: Checkout
-              uses: actions/checkout@v2
+              uses: actions/checkout@v4
 
             - name: Configure AWS Credentials
               uses: aws-actions/configure-aws-credentials@v1
@@ -55,13 +55,13 @@ jobs:
                   --function-name ${{ secrets.AWS_ARN_LAMBDA_DEV }} \
                   --zip-file=fileb://code.zip
 
-    prod:
+    Prod:
         runs-on: ubuntu-latest
         environment: prod
-        needs: dev
+        needs: Dev
         steps:
             - name: Checkout
-              uses: actions/checkout@v2
+              uses: actions/checkout@v4
       
             - name: Create Release
               id: prod
@@ -89,20 +89,11 @@ jobs:
             - name: Install zip tool
               uses: montudor/action-zip@v1
 
-            - name: Create Zip file for Lambda Function
-              run: cd src && zip -r code.zip .
-            
-            - name: Create Zip file for Lambda Function Test
-              run: cd test && zip -r test.zip .
-  
-            - name: Deploy to AWS Lambda
-              run: | 
-                  aws lambda update-function-code \
-                  --function-name ${{ secrets.AWS_ARN_LAMBDA_DEV }} \
-                  --zip-file=fileb://test/test.zip
+            - name: Create Zip file for Lambda Function 
+              run: zip -r code.zip .
 
             - name: Deploy to AWS Lambda
               run: | 
                 aws lambda update-function-code \
-                --function-name ${{ secrets.AWS_ARN_LAMBDA_PROD }} \
-                --zip-file=fileb://src/code.zip
+                --function-name ${{ secrets.AWS_ARN_LAMBDA_DEV }} \
+                --zip-file=fileb://code.zip
