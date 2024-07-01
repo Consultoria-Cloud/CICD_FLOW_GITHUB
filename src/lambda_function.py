@@ -1,5 +1,5 @@
 import json
-from extra_utils import get_lambda_mensagge
+from extra_utils import get_lambda_mensage
 
 def lambda_handler(event, context):
     # TODO implement

@@ -1,12 +1,13 @@
 name: Deploy Lambda Function
 
 on:
-    push:
-        branches: [dev]
+    push: 
+      branches: [dev]
+
     pull_request:
         branches: [main]
 
-    workflow_dispatch:
+    #workflow_dispatch:
     
 jobs:
 
